@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ontokai Ontology Schema",
+  "description": "JSON Schema for Ontokai-generated business ontologies",
+  "type": "object",
+  "required": ["metadata", "regulations", "business_processes", "business_terms", "relationships"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["company", "industry", "location", "generated_date"],
+      "properties": {
+        "company": {
+          "type": "string",
+          "description": "Company name"
+        },
+        "industry": {
+          "type": "string",
+          "description": "Industry sector",
+          "examples": ["Insurance", "Banking", "Healthcare", "Telecommunications"]
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "countries": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "regions": {
+              "type": "array",
+              "items": {"type": "string"},
+              "examples": [["EU"], ["APAC"], ["Americas"]]
+            }
+          }
+        },
+        "regulations": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of applicable regulation identifiers"
+        },
+        "generated_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of ontology generation"
+        },
+        "ontokai_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Ontokai version used for generation"
+        }
+      }
+    },
+    "regulations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "jurisdiction"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^reg_[a-z0-9_]+$",
+            "description": "Unique regulation identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full regulation name"
+          },
+          "short_name": {
+            "type": "string",
+            "description": "Common abbreviation (e.g., GDPR, SOX)"
+          },
+          "identifier": {
+            "type": "string",
+            "description": "Official identifier (e.g., EU 2016/679)"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "description": "Geographical jurisdiction"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link to official regulation text"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief regulation summary"
+          }
+        }
+      }
+    },
+    "business_processes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "required_by"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^proc_[a-z0-9_]+$",
+            "description": "Unique process identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Process name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed process description"
+          },
+          "required_by": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Regulation IDs requiring this process"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Typical process owner role"
+          },
+          "key_activities": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Main activities in this process"
+          },
+          "uses_terms": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Business term IDs used in this process"
+          }
+        }
+      }
+    },
+    "business_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "definition", "source_regulation"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^term_[a-z0-9_]+$",
+            "description": "Unique term identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Term name"
+          },
+          "short_name": {
+            "type": "string",
+            "description": "Abbreviation if applicable"
+          },
+          "definition": {
+            "type": "string",
+            "description": "Official term definition"
+          },
+          "source_regulation": {
+            "type": "string",
+            "description": "Regulation ID where term is defined"
+          },
+          "source_article": {
+            "type": "string",
+            "description": "Specific article/section reference"
+          },
+          "examples": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Concrete examples of the term"
+          },
+          "related_terms": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Related term IDs"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "source_type", "relation", "target", "target_type"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source entity identifier or name"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": ["company", "regulation", "business_process", "business_term"],
+            "description": "Type of source entity"
+          },
+          "relation": {
+            "type": "string",
+            "enum": ["complies_with", "requires", "uses", "relates_to"],
+            "description": "Type of relationship"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target entity identifier"
+          },
+          "target_type": {
+            "type": "string",
+            "enum": ["regulation", "business_process", "business_term"],
+            "description": "Type of target entity"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional relationship metadata"
+          }
+        }
+      }
+    }
+  }
+}

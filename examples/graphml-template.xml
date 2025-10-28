@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GraphML Export Template for Ontokai Ontologies -->
+<!-- Import into: Neo4j, Gephi, yEd, Cytoscape -->
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+  <!-- Node attribute definitions -->
+  <key id="type" for="node" attr.name="type" attr.type="string"/>
+  <key id="name" for="node" attr.name="name" attr.type="string"/>
+  <key id="definition" for="node" attr.name="definition" attr.type="string"/>
+  <key id="description" for="node" attr.name="description" attr.type="string"/>
+  <key id="source_regulation" for="node" attr.name="source_regulation" attr.type="string"/>
+  <key id="jurisdiction" for="node" attr.name="jurisdiction" attr.type="string"/>
+  <key id="identifier" for="node" attr.name="identifier" attr.type="string"/>
+
+  <!-- Edge attribute definitions -->
+  <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="label" for="edge" attr.name="label" attr.type="string"/>
+
+  <graph id="OntoKai_Ontology" edgedefault="directed">
+
+    <!-- Company Node -->
+    <node id="company_acme">
+      <data key="type">company</data>
+      <data key="name">Acme Insurance</data>
+      <data key="description">Insurance company operating in EU</data>
+    </node>
+
+    <!-- Regulation Nodes -->
+    <node id="reg_gdpr">
+      <data key="type">regulation</data>
+      <data key="name">GDPR</data>
+      <data key="definition">General Data Protection Regulation</data>
+      <data key="identifier">EU 2016/679</data>
+      <data key="jurisdiction">EU</data>
+    </node>
+
+    <node id="reg_solvency_ii">
+      <data key="type">regulation</data>
+      <data key="name">Solvency II</data>
+      <data key="definition">Solvency II Directive</data>
+      <data key="identifier">EU 2009/138/EC</data>
+      <data key="jurisdiction">EU</data>
+    </node>
+
+    <!-- Business Process Nodes -->
+    <node id="proc_data_protection">
+      <data key="type">business_process</data>
+      <data key="name">Data Protection Process</data>
+      <data key="description">Ensure lawful processing of personal data and protect data subject rights</data>
+      <data key="source_regulation">GDPR</data>
+    </node>
+
+    <node id="proc_risk_management">
+      <data key="type">business_process</data>
+      <data key="name">Risk Management Process</data>
+      <data key="description">Identify, assess, and manage insurance risks under Solvency II framework</data>
+      <data key="source_regulation">Solvency II</data>
+    </node>
+
+    <!-- Business Term Nodes -->
+    <node id="term_personal_data">
+      <data key="type">business_term</data>
+      <data key="name">Personal Data</data>
+      <data key="definition">Any information relating to an identified or identifiable natural person</data>
+      <data key="source_regulation">GDPR</data>
+    </node>
+
+    <node id="term_data_subject_rights">
+      <data key="type">business_term</data>
+      <data key="name">Data Subject Rights</data>
+      <data key="definition">Rights of individuals regarding their personal data under GDPR</data>
+      <data key="source_regulation">GDPR</data>
+    </node>
+
+    <node id="term_consent_management">
+      <data key="type">business_term</data>
+      <data key="name">Consent Management</data>
+      <data key="definition">Process of obtaining, recording, and managing consent for personal data processing</data>
+      <data key="source_regulation">GDPR</data>
+    </node>
+
+    <node id="term_scr">
+      <data key="type">business_term</data>
+      <data key="name">SCR</data>
+      <data key="definition">Solvency Capital Requirement - Capital required to ensure obligations with 99.5% confidence</data>
+      <data key="source_regulation">Solvency II</data>
+    </node>
+
+    <node id="term_own_funds">
+      <data key="type">business_term</data>
+      <data key="name">Own Funds</data>
+      <data key="definition">Sum of basic and ancillary own funds available to absorb losses</data>
+      <data key="source_regulation">Solvency II</data>
+    </node>
+
+    <node id="term_orsa">
+      <data key="type">business_term</data>
+      <data key="name">ORSA</data>
+      <data key="definition">Own Risk and Solvency Assessment - Internal risk and solvency assessment</data>
+      <data key="source_regulation">Solvency II</data>
+    </node>
+
+    <!-- Relationships (Edges) -->
+
+    <!-- Company to Regulations -->
+    <edge source="company_acme" target="reg_gdpr">
+      <data key="relation">complies_with</data>
+      <data key="label">complies with</data>
+    </edge>
+
+    <edge source="company_acme" target="reg_solvency_ii">
+      <data key="relation">complies_with</data>
+      <data key="label">complies with</data>
+    </edge>
+
+    <!-- Regulations to Processes -->
+    <edge source="reg_gdpr" target="proc_data_protection">
+      <data key="relation">requires</data>
+      <data key="label">requires</data>
+    </edge>
+
+    <edge source="reg_solvency_ii" target="proc_risk_management">
+      <data key="relation">requires</data>
+      <data key="label">requires</data>
+    </edge>
+
+    <!-- Processes to Terms (GDPR) -->
+    <edge source="proc_data_protection" target="term_personal_data">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+    <edge source="proc_data_protection" target="term_data_subject_rights">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+    <edge source="proc_data_protection" target="term_consent_management">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+    <!-- Processes to Terms (Solvency II) -->
+    <edge source="proc_risk_management" target="term_scr">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+    <edge source="proc_risk_management" target="term_own_funds">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+    <edge source="proc_risk_management" target="term_orsa">
+      <data key="relation">uses</data>
+      <data key="label">uses</data>
+    </edge>
+
+  </graph>
+</graphml>

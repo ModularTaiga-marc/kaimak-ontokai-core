@@ -1,0 +1,7 @@
+Term Name,Short Name,Definition,Source Regulation,Article/Section,Examples,Category
+Personal Data,,Any information relating to an identified or identifiable natural person,GDPR,Article 4(1),"Name; Email address; ID number; Location data; Online identifiers",Data Privacy
+Data Subject Rights,,Rights of individuals regarding their personal data under GDPR,GDPR,Articles 15-22,"Right to access; Right to rectification; Right to erasure; Right to portability",Data Privacy
+Consent Management,,Process of obtaining recording and managing consent for personal data processing,GDPR,Article 7,"Freely given; Specific; Informed; Unambiguous; Withdrawable",Data Privacy
+Solvency Capital Requirement,SCR,Capital required to ensure insurance undertaking can meet obligations with 99.5% confidence over one year,Solvency II,Articles 100-127,"Standard Formula calculation; Internal Model calculation",Risk Management
+Own Funds,,Sum of basic own funds and ancillary own funds available to absorb losses,Solvency II,Articles 87-99,"Tier 1 capital; Tier 2 capital; Tier 3 capital",Capital Management
+Own Risk and Solvency Assessment,ORSA,Internal assessment of risk and solvency needs considering business strategy and risk profile,Solvency II,Article 45,"Overall solvency needs; Compliance with capital requirements; Risk profile assessment",Risk Management

@@ -1,0 +1,241 @@
+{
+  "metadata": {
+    "company": "Acme Insurance",
+    "industry": "Insurance",
+    "location": {
+      "countries": ["Spain"],
+      "regions": ["EU"]
+    },
+    "regulations": ["GDPR", "Solvency II"],
+    "generated_date": "2025-01-15T10:30:00Z",
+    "ontokai_version": "1.0.0"
+  },
+  "regulations": [
+    {
+      "id": "reg_gdpr",
+      "name": "General Data Protection Regulation",
+      "short_name": "GDPR",
+      "identifier": "EU 2016/679",
+      "jurisdiction": "EU",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "description": "Regulation on the protection of natural persons with regard to the processing of personal data"
+    },
+    {
+      "id": "reg_solvency_ii",
+      "name": "Solvency II Directive",
+      "short_name": "Solvency II",
+      "identifier": "EU 2009/138/EC",
+      "jurisdiction": "EU",
+      "url": "https://eur-lex.europa.eu/eli/dir/2009/138/oj",
+      "description": "Insurance and reinsurance prudential requirements directive"
+    }
+  ],
+  "business_processes": [
+    {
+      "id": "proc_data_protection",
+      "name": "Data Protection Process",
+      "description": "Ensure lawful processing of personal data and protect data subject rights",
+      "required_by": ["reg_gdpr"],
+      "owner": "Data Protection Officer",
+      "key_activities": [
+        "Implement privacy by design",
+        "Conduct data protection impact assessments",
+        "Handle data subject requests",
+        "Maintain processing records",
+        "Report data breaches"
+      ],
+      "uses_terms": [
+        "term_personal_data",
+        "term_data_subject_rights",
+        "term_consent_management"
+      ]
+    },
+    {
+      "id": "proc_risk_management",
+      "name": "Risk Management Process",
+      "description": "Identify, assess, and manage insurance risks under Solvency II framework",
+      "required_by": ["reg_solvency_ii"],
+      "owner": "Chief Risk Officer",
+      "key_activities": [
+        "Calculate Solvency Capital Requirement",
+        "Maintain Own Funds",
+        "Conduct ORSA",
+        "Monitor risk appetite",
+        "Report to supervisory authority"
+      ],
+      "uses_terms": [
+        "term_scr",
+        "term_own_funds",
+        "term_orsa"
+      ]
+    }
+  ],
+  "business_terms": [
+    {
+      "id": "term_personal_data",
+      "name": "Personal Data",
+      "definition": "Any information relating to an identified or identifiable natural person",
+      "source_regulation": "reg_gdpr",
+      "source_article": "Article 4(1)",
+      "examples": [
+        "Name",
+        "Email address",
+        "ID number",
+        "Location data",
+        "Online identifiers"
+      ],
+      "related_terms": [
+        "term_data_subject",
+        "term_processing"
+      ]
+    },
+    {
+      "id": "term_data_subject_rights",
+      "name": "Data Subject Rights",
+      "definition": "Rights of individuals regarding their personal data under GDPR",
+      "source_regulation": "reg_gdpr",
+      "source_article": "Articles 15-22",
+      "sub_rights": [
+        {
+          "name": "Right to Access",
+          "description": "Right to obtain confirmation of data processing and access to personal data"
+        },
+        {
+          "name": "Right to Rectification",
+          "description": "Right to have inaccurate personal data corrected"
+        },
+        {
+          "name": "Right to Erasure",
+          "description": "Right to be forgotten in certain circumstances"
+        },
+        {
+          "name": "Right to Data Portability",
+          "description": "Right to receive and transmit personal data"
+        }
+      ]
+    },
+    {
+      "id": "term_consent_management",
+      "name": "Consent Management",
+      "definition": "Process of obtaining, recording, and managing consent for personal data processing",
+      "source_regulation": "reg_gdpr",
+      "source_article": "Article 7",
+      "requirements": [
+        "Freely given",
+        "Specific",
+        "Informed",
+        "Unambiguous",
+        "Withdrawable"
+      ]
+    },
+    {
+      "id": "term_scr",
+      "name": "Solvency Capital Requirement",
+      "short_name": "SCR",
+      "definition": "Capital required to ensure an insurance undertaking can meet its obligations over the next 12 months with a probability of at least 99.5%",
+      "source_regulation": "reg_solvency_ii",
+      "source_article": "Article 100-127",
+      "calculation_methods": [
+        "Standard Formula",
+        "Internal Model"
+      ]
+    },
+    {
+      "id": "term_own_funds",
+      "name": "Own Funds",
+      "definition": "Sum of basic own funds and ancillary own funds available to absorb losses",
+      "source_regulation": "reg_solvency_ii",
+      "source_article": "Article 87-99",
+      "tiers": [
+        "Tier 1 - Highest quality",
+        "Tier 2 - Medium quality",
+        "Tier 3 - Lower quality"
+      ]
+    },
+    {
+      "id": "term_orsa",
+      "name": "Own Risk and Solvency Assessment",
+      "short_name": "ORSA",
+      "definition": "Internal assessment of risk and solvency needs considering business strategy and risk profile",
+      "source_regulation": "reg_solvency_ii",
+      "source_article": "Article 45",
+      "components": [
+        "Overall solvency needs",
+        "Compliance with capital requirements",
+        "Risk profile vs standard formula assumptions"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "source": "Acme Insurance",
+      "source_type": "company",
+      "relation": "complies_with",
+      "target": "reg_gdpr",
+      "target_type": "regulation"
+    },
+    {
+      "source": "Acme Insurance",
+      "source_type": "company",
+      "relation": "complies_with",
+      "target": "reg_solvency_ii",
+      "target_type": "regulation"
+    },
+    {
+      "source": "reg_gdpr",
+      "source_type": "regulation",
+      "relation": "requires",
+      "target": "proc_data_protection",
+      "target_type": "business_process"
+    },
+    {
+      "source": "reg_solvency_ii",
+      "source_type": "regulation",
+      "relation": "requires",
+      "target": "proc_risk_management",
+      "target_type": "business_process"
+    },
+    {
+      "source": "proc_data_protection",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_personal_data",
+      "target_type": "business_term"
+    },
+    {
+      "source": "proc_data_protection",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_data_subject_rights",
+      "target_type": "business_term"
+    },
+    {
+      "source": "proc_data_protection",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_consent_management",
+      "target_type": "business_term"
+    },
+    {
+      "source": "proc_risk_management",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_scr",
+      "target_type": "business_term"
+    },
+    {
+      "source": "proc_risk_management",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_own_funds",
+      "target_type": "business_term"
+    },
+    {
+      "source": "proc_risk_management",
+      "source_type": "business_process",
+      "relation": "uses",
+      "target": "term_orsa",
+      "target_type": "business_term"
+    }
+  ]
+}
