@@ -1,0 +1,22 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#6366f1"/>
+
+  <!-- Knowledge graph nodes (3 interconnected circles) -->
+  <!-- Top node -->
+  <circle cx="16" cy="9" r="3" fill="white"/>
+
+  <!-- Bottom left node -->
+  <circle cx="10" cy="21" r="3" fill="white"/>
+
+  <!-- Bottom right node -->
+  <circle cx="22" cy="21" r="3" fill="white"/>
+
+  <!-- Connecting lines -->
+  <line x1="16" y1="12" x2="11" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="16" y1="12" x2="21" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="13" y1="21" x2="19" y2="21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Center highlight dot -->
+  <circle cx="16" cy="16" r="1.5" fill="#0ea5e9"/>
+</svg>
