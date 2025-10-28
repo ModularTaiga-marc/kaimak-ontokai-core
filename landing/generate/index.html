@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OntoKai - Generate Your Business Ontology</title>
+    <meta name="description" content="Generate complete business ontologies from regulations automatically. Create your knowledge graph in 2 minutes.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- D3.js for graph visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'catalyst-blue': '#0066cc',
+                        'catalyst-purple': '#6366f1',
+                        'catalyst-dark': '#0f172a',
+                        'catalyst-gray': '#1e293b',
+                        'kaimak-blue': '#0066cc',
+                        'kaimak-dark': '#1a1a2e',
+                        'kaimak-gray': '#2d2d44',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+        }
+        .glow-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .wizard-step { animation: slideInUp 0.4s ease-out; }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #6366f1, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease-out;
+        }
+
+        /* D3.js Interactive Graph Styles - Full viewport */
+        #kg-container {
+            height: calc(100vh - 80px); /* Maximize viewport: only header (60px) + padding (20px) */
+            max-width: 100vw; /* Ensure it can use full viewport width */
+        }
+
+        /* Ensure interactive graph section uses full width */
+        #interactive-kg-section {
+            max-width: 100vw;
+        }
+
+        #interactive-kg-section main {
+            max-width: 100%;
+        }
+
+        /* Make graph canvas fully responsive to container width */
+        #graph-canvas {
+            width: 100%;
+            min-width: 0; /* Allow flex shrinking */
+        }
+
+        /* Hide token bar to save space */
+        .token-tracker {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(29, 29, 68, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .node-circle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node-circle:hover {
+            filter: brightness(1.3);
+        }
+
+        .link-line {
+            stroke: #475569;
+            stroke-opacity: 0.4;
+            stroke-width: 2px;
+        }
+
+        .node-label {
+            pointer-events: none;
+            user-select: none;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .explore-button {
+            transition: all 0.2s ease;
+        }
+
+        .explore-button:hover {
+            transform: scale(1.05);
+        }
+
+        .cache-indicator {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .token-bar-fill {
+            transition: width 0.5s ease;
+        }
+
+        /* Semantic layer visualization */
+        .semantic-layer {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid #334155;
+        }
+
+        .layer-node {
+            transition: all 0.3s ease;
+        }
+
+        .layer-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-catalyst-dark via-catalyst-gray to-catalyst-dark min-h-screen text-white">
+
+    <!-- Main Content -->
+    <main class="w-full px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+
+        <!-- Wizard Form -->
+        <div id="wizard-section">
+            <div class="bg-catalyst-gray/50 rounded-2xl p-8 backdrop-blur-sm shadow-2xl border border-gray-700">
+
+                <!-- Progress Bar -->
+                <div class="mb-8">
+                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                        <span>Step <span id="current-step">1</span> of 3</span>
+                        <span><span id="progress-percent">0</span>% complete</span>
+                    </div>
+                    <div class="h-2 bg-catalyst-dark rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-purple-600 to-blue-500 progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Step Container -->
+                <div id="step-container" class="min-h-[400px]">
+                    <!-- Steps will be inserted here -->
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading-section" class="hidden">
+            <div class="bg-catalyst-gray/50 rounded-2xl p-12 backdrop-blur-sm shadow-2xl text-center border border-gray-700">
+                <div class="relative w-40 h-40 mx-auto mb-6">
+                    <div class="absolute inset-0 border-4 border-purple-500 rounded-full animate-spin" style="border-top-color: transparent;"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-5xl">🧬</div>
+                </div>
+                <h3 class="text-3xl font-bold mb-3">Building Your Semantic Layer...</h3>
+                <p class="text-gray-400 text-lg" id="loading-message">Reverse-engineering business semantics from regulations</p>
+                <div class="mt-8 space-y-3 text-sm text-gray-400">
+                    <div id="loading-step-1" class="opacity-0 transition-opacity">⏳ Identifying applicable regulations...</div>
+                    <div id="loading-step-2" class="opacity-0 transition-opacity">⏳ Extracting business terms and definitions...</div>
+                    <div id="loading-step-3" class="opacity-0 transition-opacity">⏳ Building data lineage mappings...</div>
+                    <div id="loading-step-4" class="opacity-0 transition-opacity">⏳ Generating policy templates...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <!-- COMPANY HEADER (scrolls with page, not fixed) -->
+            <div id="company-header" class="bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-2xl p-6 mb-6 border border-purple-500/50 shadow-2xl">
+                <!-- This will be populated by displayHeaderInfo() -->
+            </div>
+
+            <div class="bg-catalyst-gray/50 rounded-2xl p-8 backdrop-blur-sm shadow-2xl border border-gray-700">
+
+                <!-- Success Message -->
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4">✨</div>
+                    <h3 class="text-4xl font-bold mb-2">Company Intelligence Generated</h3>
+                    <p class="text-gray-400 text-lg" id="results-headline"></p>
+
+                    <!-- Exploration Credits Display -->
+                    <div class="inline-flex items-center gap-2 bg-purple-900/30 border border-purple-500/50 rounded-full px-4 py-2 text-sm mt-4">
+                        <span class="text-sm text-purple-300">⭐ Exploration Credits:</span>
+                        <span id="credits-remaining" class="text-2xl font-bold text-purple-400">10</span>
+                        <span class="text-xs text-gray-400">/10</span>
+                    </div>
+                </div>
+
+                <!-- COMPANY OVERVIEW (Light, First View) -->
+                <div id="company-overview" class="mb-8">
+                    <h4 class="text-2xl font-bold mb-4">✨ Your Regulatory Intelligence</h4>
+                    <p class="text-gray-400 text-sm mb-4">Kaimak analyzed your industry's regulatory landscape and generated domain-expert insights. Explore below to see technical depth.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="overview-cards">
+                        <!-- Will be populated dynamically (supports col-span-full for wide items) -->
+                    </div>
+                </div>
+
+                <!-- Removed: Fake static stats section - replaced by dynamic overview above -->
+
+                <!-- Taxonomy-Driven Navigation -->
+                <div class="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-semibold">🗺️ Explore Semantic Layers for <span id="company-name-discovery"></span></span>
+                        <span class="text-purple-400 font-bold" id="discovery-summary">Select context → reveal insights</span>
+                    </div>
+                    <p class="text-xs text-gray-400">All regulations and lines of business are already discovered. Select one to explore processes and terms (1 credit per exploration).</p>
+                </div>
+
+                <!-- Exploration Breadcrumb Navigation -->
+                <div id="exploration-breadcrumb" class="hidden bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-6 flex items-center gap-2 text-sm">
+                    <span class="text-gray-400">📍</span>
+                    <!-- Breadcrumbs will be inserted here dynamically -->
+                </div>
+
+                <!-- Section 1: Regulations (Always Visible, Checkboxes) -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <span>📋</span>
+                                <span>Regulations & Compliance</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">All applicable regulations identified for your industry and location</p>
+                        </div>
+                    </div>
+
+                    <!-- Regulations Grid (Always Visible, No LLM) -->
+                    <div id="regulations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                        <!-- Will be populated from semantic_layer.regulatory_context -->
+                    </div>
+
+                    <!-- Dynamic Explore Button (appears after checkbox selection) -->
+                    <div id="regulations-explore-btn-container" class="hidden">
+                        <button
+                            id="btn-explore-regulations"
+                            onclick="exploreRegulations()"
+                            class="w-full bg-green-900/30 hover:bg-green-900/50 border border-green-500/50 text-green-400 px-6 py-3 rounded-lg font-semibold transition-all">
+                            🔍 Explore Selected Regulation Details (1 credit)
+                        </button>
+                    </div>
+
+                    <!-- Expanded Content (appears after exploration) -->
+                    <div id="regulations-content" class="mt-4 space-y-3 hidden"></div>
+                </div>
+
+                <!-- Section 2: Lines of Business (Always Visible, Checkboxes) -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <span>🏢</span>
+                                <span>Lines of Business</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">Main business segments for your company</p>
+                        </div>
+                    </div>
+
+                    <!-- LoB Grid (Always Visible, Generated by LLM) -->
+                    <div id="lob-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                        <!-- Will be populated from lines_of_business -->
+                    </div>
+
+                    <!-- Dynamic Explore Button (appears after checkbox selection) -->
+                    <div id="lob-explore-btn-container" class="hidden">
+                        <button
+                            id="btn-explore-lob"
+                            onclick="exploreLineOfBusiness()"
+                            class="w-full bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/50 text-purple-400 px-6 py-3 rounded-lg font-semibold transition-all">
+                            🔍 Explore Business Processes for Selected LoB (1 credit)
+                        </button>
+                    </div>
+
+                    <!-- Expanded Content (appears after exploration) -->
+                    <div id="lob-content" class="mt-4 space-y-3 hidden"></div>
+                </div>
+
+                <!-- Section 3: Business Processes (Empty Until Explored from Reg/LoB) -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <span>⚙️</span>
+                                <span>Business Processes</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">Explore processes from a selected regulation or line of business</p>
+                        </div>
+                    </div>
+
+                    <!-- Processes Grid (Initially Empty, Checkbox Selection) -->
+                    <div id="processes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 hidden">
+                        <!-- Will be populated after exploring from Reg/LoB -->
+                    </div>
+
+                    <!-- Dynamic Explore Button (appears after checkbox selection) -->
+                    <div id="processes-explore-btn-container" class="hidden">
+                        <button
+                            id="btn-explore-processes"
+                            onclick="exploreBusinessTerms()"
+                            class="w-full bg-blue-900/30 hover:bg-blue-900/50 border border-blue-500/50 text-blue-400 px-6 py-3 rounded-lg font-semibold transition-all">
+                            🔍 Explore Business Terms for Selected Process (1 credit)
+                        </button>
+                    </div>
+
+                    <!-- Expanded Content (Multiple Explorations, Auto-Collapse) -->
+                    <div id="processes-content" class="mt-4 space-y-3 hidden"></div>
+
+                    <!-- Placeholder Message -->
+                    <div id="processes-placeholder" class="text-center py-8 text-gray-500 text-sm">
+                        👆 Select a regulation or line of business above to explore related processes
+                    </div>
+                </div>
+
+                <!-- Section 4: Business Terms (Empty Until Explored from Process/Reg) -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <span>📖</span>
+                                <span>Business Terms & Glossary</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">Explore terms from a selected business process or regulation</p>
+                        </div>
+                    </div>
+
+                    <!-- Terms Grid (Initially Empty) -->
+                    <div id="terms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 hidden">
+                        <!-- Will be populated after exploring from Process/Reg -->
+                    </div>
+
+                    <!-- Expanded Content (Multiple Explorations, Auto-Collapse) -->
+                    <div id="terms-content" class="mt-4 space-y-3 hidden"></div>
+
+                    <!-- Placeholder Message -->
+                    <div id="terms-placeholder" class="text-center py-8 text-gray-500 text-sm">
+                        👆 Select a business process or regulation above to explore related business terms
+                    </div>
+                </div>
+
+                <!-- Knowledge Graph Visualization -->
+                <div class="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-xl p-6 mb-8 border border-cyan-500/30">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <span>🕸️</span>
+                                <span>Knowledge Graph Visualization</span>
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">Interactive network view of regulations, processes, and terms</p>
+                        </div>
+                    </div>
+                    <button
+                        id="show-kg-btn"
+                        onclick="showKnowledgeGraph()"
+                        class="w-full bg-cyan-900/30 hover:bg-cyan-900/50 border border-cyan-500/50 text-cyan-400 px-6 py-4 rounded-lg font-semibold transition-all">
+                        🔗 View Knowledge Graph (Interactive Network)
+                    </button>
+                    <p class="text-xs text-gray-400 mt-3 text-center">
+                        Visualize connections between regulations, business processes, and terms
+                    </p>
+                </div>
+
+                <!-- Export Formats -->
+                <div class="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-6 mb-8 border border-purple-500/30">
+                    <h4 class="text-xl font-bold mb-4">📦 Export to Your DG Platform</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button class="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg text-sm font-semibold transition-colors border border-gray-600">
+                            📊 Collibra CSV
+                        </button>
+                        <button class="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg text-sm font-semibold transition-colors border border-gray-600">
+                            📊 Alation JSON
+                        </button>
+                        <button class="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg text-sm font-semibold transition-colors border border-gray-600">
+                            📊 Excel Template
+                        </button>
+                        <button class="bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-lg text-sm font-semibold transition-colors border border-gray-600">
+                            📊 JSON Schema
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-4">⚠️ Full export available in Premium version</p>
+                </div>
+
+                <!-- Locked Premium Content -->
+                <div class="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-xl p-6 mb-8 border border-purple-500/30">
+                    <h4 class="text-xl font-bold mb-4">🔒 Premium Semantic Catalyst</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-300">
+                        <div>🔐 Complete Business Glossary (2,000+ terms)</div>
+                        <div>🔐 Full Data Lineage (500+ mappings)</div>
+                        <div>🔐 Policy Framework (100+ templates)</div>
+                        <div>🔐 Compliance Scoring (regulatory alignment)</div>
+                        <div>🔐 Multi-jurisdiction Support (EU + Local)</div>
+                        <div>🔐 Direct DG Platform Integration</div>
+                        <div>🔐 Custom Taxonomy Mapping</div>
+                        <div>🔐 Ongoing Regulatory Updates</div>
+                    </div>
+                </div>
+
+                <!-- ROI Calculator -->
+                <div class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl p-6 mb-8 border border-green-500/30">
+                    <h4 class="text-xl font-bold mb-4">💰 Your ROI Calculation</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <div class="text-sm text-gray-400">Time Saved</div>
+                            <div class="text-2xl font-bold text-green-400">15 months</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">Labor Cost Saved</div>
+                            <div class="text-2xl font-bold text-green-400">€1.16M</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">ROI Multiple</div>
+                            <div class="text-2xl font-bold text-green-400">7.3x</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400">
+                        Based on: 2 FTE data stewards (€80K/year) + 1 FTE data architect (€100K/year) × 15 months
+                    </p>
+                </div>
+
+                <!-- Upgrade CTA -->
+                <div class="bg-gradient-to-r from-purple-600 to-blue-500 rounded-xl p-8 text-center">
+                    <h4 class="text-3xl font-bold mb-3">🚀 Get Your Full Semantic Catalyst</h4>
+                    <p class="text-white/90 text-lg mb-3">Complete business glossary, data lineage, and policy framework</p>
+                    <p class="text-white font-bold text-2xl mb-2">€150,000 one-time</p>
+                    <p class="text-white/80 text-sm mb-6">6-10% of your DG platform investment • Delivered in 2 weeks</p>
+
+                    <div class="flex flex-col md:flex-row gap-4 justify-center mb-4">
+                        <button
+                            id="request-full-btn"
+                            class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+                        >
+                            💼 Request Enterprise Demo
+                        </button>
+                        <button
+                            id="talk-to-expert-btn"
+                            class="bg-purple-900 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-800 transition-colors border-2 border-white"
+                        >
+                            📞 Talk to CDO Expert
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-white/80">
+                        <div>✅ 2-week delivery</div>
+                        <div>✅ Integrates with your DG platform</div>
+                        <div>✅ Ongoing regulatory updates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credits Exhausted Modal -->
+        <div id="credits-exhausted-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
+            <div class="bg-gradient-to-br from-catalyst-dark to-purple-900/20 rounded-2xl p-8 max-w-md border-2 border-purple-500/50">
+                <div class="text-center mb-6">
+                    <div class="text-5xl mb-3">🎯</div>
+                    <h3 class="text-3xl font-bold mb-2">Exploration Limit Reached!</h3>
+                    <p class="text-gray-300">
+                        You've explored 10 sections and discovered the power of semantic acceleration.
+                    </p>
+                </div>
+
+                <div class="bg-catalyst-dark/50 rounded-lg p-4 mb-6">
+                    <div class="text-sm text-gray-400 mb-3">Unlock unlimited exploration + get:</div>
+                    <ul class="text-sm text-gray-300 space-y-2">
+                        <li>✅ Complete semantic layer (2000+ terms, 100+ policies, 500+ lineages)</li>
+                        <li>✅ Implementation guides with timelines & resources</li>
+                        <li>✅ Export to Collibra, Alation, Informatica, Atlan</li>
+                        <li>✅ Custom tailored to your organization</li>
+                        <li>✅ ROI: 15 months saved, €1.16M cost avoided</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3">
+                    <a href="mailto:sales@kaimak.ai?subject=Request Unlimited Semantic Exploration&body=I explored the semantic layer and want to unlock the complete version for my organization."
+                       class="block w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-4 rounded-lg font-bold text-center hover:scale-105 transition-transform">
+                        📞 Talk to CDO Expert
+                    </a>
+
+                    <button
+                        onclick="document.getElementById('request-modal').classList.remove('hidden'); document.getElementById('credits-exhausted-modal').classList.add('hidden')"
+                        class="w-full border border-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-catalyst-dark/50 transition-all">
+                        📅 Request Enterprise Demo
+                    </button>
+
+                    <button
+                        onclick="document.getElementById('credits-exhausted-modal').classList.add('hidden')"
+                        class="w-full text-gray-500 text-sm hover:text-gray-300 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Modal -->
+        <div id="request-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div class="bg-catalyst-gray rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+                <h3 class="text-2xl font-bold mb-2">💼 Request Enterprise Demo</h3>
+                <p class="text-gray-400 mb-6">We'll show you how Semantic Catalyst accelerates your specific DG platform deployment</p>
+
+                <div class="bg-purple-900/30 border border-purple-500/50 rounded-lg p-4 mb-6">
+                    <h4 class="font-semibold mb-2">What's included in demo:</h4>
+                    <ul class="text-sm space-y-1 text-gray-300">
+                        <li>✅ Live semantic layer generation for your industry</li>
+                        <li>✅ Direct import to Collibra/Alation sandbox</li>
+                        <li>✅ ROI calculator (specific to your DG investment)</li>
+                        <li>✅ Integration architecture review</li>
+                        <li>✅ Regulatory coverage analysis</li>
+                        <li>✅ Custom pricing (based on # of regulations/jurisdictions)</li>
+                    </ul>
+                </div>
+
+                <form id="request-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Your Email</label>
+                        <input type="email" id="request-email" required readonly class="w-full bg-catalyst-dark border border-gray-600 rounded-lg px-4 py-2 text-white" placeholder="cdo@company.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Name</label>
+                        <input type="text" id="request-company" required readonly class="w-full bg-catalyst-dark border border-gray-600 rounded-lg px-4 py-2 text-white" placeholder="Your company">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Current DG Platform</label>
+                        <select id="request-platform" class="w-full bg-catalyst-dark border border-gray-600 rounded-lg px-4 py-2 text-white">
+                            <option value="">Select your DG platform...</option>
+                            <option value="collibra">Collibra</option>
+                            <option value="alation">Alation</option>
+                            <option value="informatica">Informatica</option>
+                            <option value="atlan">Atlan</option>
+                            <option value="none">Planning to implement one</option>
+                            <option value="other">Other / Custom</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">What's your biggest DG challenge? (Optional)</label>
+                        <textarea id="request-challenge" rows="2" class="w-full bg-catalyst-dark border border-gray-600 rounded-lg px-4 py-2 text-white" placeholder="e.g., blank business glossary, no time for manual data lineage, too many regulations..."></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            📧 Request Demo
+                        </button>
+                        <button type="button" id="cancel-request-btn" class="px-6 py-3 border border-gray-600 rounded-lg font-semibold hover:bg-catalyst-dark">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                <p class="text-xs text-gray-500 mt-4 text-center">🤝 We'll reach out within 24 hours to schedule your personalized demo</p>
+            </div>
+        </div>
+        </div> <!-- Close max-w-4xl wrapper for wizard -->
+
+        <!-- Interactive Knowledge Graph Section (Version B) - Hidden until wizard completes -->
+        <div id="interactive-kg-section" class="hidden">
+            <!-- Interactive Graph Header -->
+            <header class="w-full px-4 py-4 border-b border-gray-700 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">🔊</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold gradient-text">Kaimak</h1>
+                            <p class="text-xs text-gray-400">Interactive Explorer (Version B)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <!-- Export Button -->
+                        <button
+                            id="export-kg-btn"
+                            onclick="exportKnowledgeGraphToExcel()"
+                            class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-semibold shadow-lg hover:shadow-2xl transition-all duration-200 flex items-center gap-2"
+                            title="Export knowledge graph to Excel (Collibra, Alation, Informatica ready)"
+                        >
+                            <i class="fas fa-file-excel"></i>
+                            <span class="hidden sm:inline">Export to Excel</span>
+                            <span class="sm:hidden">Export</span>
+                        </button>
+                        <!-- Company Info -->
+                        <div class="text-sm text-gray-400 text-right">
+                            <div class="font-semibold" id="company-name-header-kg"></div>
+                            <div class="text-xs" id="company-industry-kg">AI-Powered Knowledge Navigation</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Interactive Graph Content -->
+            <main class="w-full px-2">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-2" id="kg-container">
+
+                    <!-- Left: Knowledge Graph Visualization (75%) -->
+                    <div class="lg:col-span-3 bg-kaimak-gray/50 rounded-xl p-2 backdrop-blur-sm shadow-2xl">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-lg font-bold flex items-center">
+                                <i class="fas fa-project-diagram mr-2 text-blue-400"></i>
+                                Knowledge Graph
+                            </h2>
+                            <div class="flex items-center space-x-2 text-sm text-gray-400">
+                                <span id="node-count">1 nodes</span>
+                                <span>•</span>
+                                <span id="link-count">0 links</span>
+                            </div>
+                        </div>
+
+                        <!-- Graph Canvas - Full height -->
+                        <div id="graph-canvas" class="w-full bg-kaimak-dark/50 rounded-lg relative" style="height: calc(100vh - 160px);">
+                            <!-- D3.js graph will render here -->
+
+                            <!-- Navigation Controls (Floating) -->
+                            <div class="absolute bottom-4 right-4 flex flex-col space-y-2 z-10">
+                                <button onclick="window.zoomIn()" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2 shadow-lg" title="Zoom In">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button onclick="window.zoomOut()" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2 shadow-lg" title="Zoom Out">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button onclick="window.centerGraph()" class="bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg p-2 shadow-lg" title="Center on Company">
+                                    <i class="fas fa-crosshairs"></i>
+                                </button>
+                                <button onclick="window.resetZoom()" class="bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-2 shadow-lg" title="Reset View">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Node Details Panel (30%) - Full height -->
+                    <div class="bg-kaimak-gray/50 rounded-xl p-4 backdrop-blur-sm shadow-2xl overflow-y-auto" style="max-height: calc(100vh - 100px);">
+                        <h2 class="text-lg font-bold mb-3 flex items-center">
+                            <i class="fas fa-info-circle mr-2 text-cyan-400"></i>
+                            Node Details
+                        </h2>
+
+                        <!-- Initial State: No node selected -->
+                        <div id="no-selection-state" class="text-center text-gray-400 py-12">
+                            <i class="fas fa-mouse-pointer text-5xl mb-4 text-gray-600"></i>
+                            <p class="text-sm">Click on the company node to start exploring</p>
+                            <p class="text-xs mt-2 text-gray-500">Each exploration uses AI tokens</p>
+                        </div>
+
+                        <!-- Node Selected State -->
+                        <div id="node-details-content" class="hidden">
+                            <!-- Node Header -->
+                            <div class="mb-4">
+                                <div class="flex items-center mb-2">
+                                    <div id="node-icon" class="w-10 h-10 rounded-lg flex items-center justify-center mr-3 text-2xl"></div>
+                                    <div>
+                                        <h3 id="node-title" class="font-bold text-lg"></h3>
+                                        <span id="node-type-badge" class="text-xs px-2 py-1 rounded-full"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Node Metadata -->
+                            <div id="node-metadata" class="mb-4 space-y-2 text-sm">
+                                <!-- Metadata will be inserted here -->
+                            </div>
+
+                            <!-- Exploration Options -->
+                            <div id="exploration-options" class="space-y-2">
+                                <h4 class="text-sm font-semibold text-gray-300 mb-2">
+                                    <i class="fas fa-compass mr-1"></i>
+                                    Explore Deeper
+                                </h4>
+                                <!-- Exploration buttons will be inserted here -->
+                            </div>
+
+                            <!-- Loading State -->
+                            <div id="exploration-loading" class="hidden text-center py-6">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
+                                <p class="text-sm text-gray-400">Exploring with AI...</p>
+                                <p class="text-xs text-gray-500 mt-1" id="loading-status"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token Usage Tracker (Fixed Bottom Bar) -->
+                <div class="token-tracker p-3">
+                    <div class="w-full px-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-4 text-sm">
+                                <div class="flex items-center">
+                                    <i class="fas fa-fire text-orange-400 mr-2"></i>
+                                    <span class="font-semibold">Session Tokens:</span>
+                                    <span id="tokens-used" class="ml-2 text-blue-400 font-bold">0</span>
+                                    <span class="text-gray-500 mx-1">/</span>
+                                    <span class="text-gray-400">10,000</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-dollar-sign text-green-400 mr-2"></i>
+                                    <span class="font-semibold">Cost:</span>
+                                    <span id="cost-usd" class="ml-2 text-green-400 font-bold">$0.00</span>
+                                    <span class="text-xs text-gray-500 ml-1">(100% Groq free tier)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 text-xs">
+                                <div>
+                                    <i class="fas fa-network-wired text-purple-400 mr-1"></i>
+                                    <span>Nodes: <strong id="nodes-discovered">1</strong></span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-database text-yellow-400 mr-1"></i>
+                                    <span>Cache Hits: <strong id="cache-hits">0</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-kaimak-dark/50 rounded-full h-2">
+                            <div id="token-progress-bar" class="token-bar-fill bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Exploration Notification Toast -->
+            <div id="exploration-toast" class="hidden fixed bottom-20 right-4 bg-kaimak-gray border border-blue-500 rounded-lg p-4 shadow-2xl max-w-sm z-50">
+                <div class="flex items-start">
+                    <i class="fas fa-check-circle text-green-400 text-xl mr-3 mt-1"></i>
+                    <div class="flex-1">
+                        <p id="toast-message" class="text-sm font-semibold mb-1"></p>
+                        <div class="text-xs text-gray-400 space-y-1">
+                            <div><i class="fas fa-fire mr-1"></i>Tokens: <span id="toast-tokens"></span></div>
+                            <div><i class="fas fa-dollar-sign mr-1"></i>Cost: <span id="toast-cost"></span></div>
+                            <div><i class="fas fa-clock mr-1"></i>Time: <span id="toast-time"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Graph Modal -->
+        <div id="kg-modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+            <div class="bg-catalyst-gray rounded-2xl w-full max-w-6xl h-[90vh] border-2 border-cyan-500/50 flex flex-col">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-700">
+                    <div>
+                        <h3 class="text-2xl font-bold text-cyan-400">🕸️ Knowledge Graph</h3>
+                        <p class="text-sm text-gray-400 mt-1">Interactive network of regulations, processes, and business terms</p>
+                    </div>
+                    <button
+                        onclick="closeKnowledgeGraph()"
+                        class="text-gray-400 hover:text-white text-3xl leading-none px-3 py-1 hover:bg-gray-800 rounded transition-colors">
+                        ×
+                    </button>
+                </div>
+
+                <!-- Graph Container -->
+                <div class="flex-1 p-6 overflow-hidden">
+                    <div id="kg-canvas" class="w-full h-full bg-catalyst-dark rounded-lg border border-cyan-500/30 relative">
+                        <!-- Canvas will be rendered here -->
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-400">
+                            <div class="text-center">
+                                <div class="text-5xl mb-4">🕸️</div>
+                                <p class="text-sm">Loading knowledge graph visualization...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend & Controls -->
+                <div class="border-t border-gray-700 p-4 bg-catalyst-dark/50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex gap-6 text-xs">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                <span class="text-gray-400">Regulations</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                                <span class="text-gray-400">Lines of Business</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+                                <span class="text-gray-400">Processes</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <span class="text-gray-400">Business Terms</span>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Drag nodes to explore • Zoom with mouse wheel • Click for details
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="container mx-auto px-4 py-8 text-center text-gray-500 text-sm border-t border-gray-800 mt-12">
+        <p class="mb-2"><strong>OntoKai</strong> - Created by <a href="https://www.linkedin.com/in/marcrafaellafuente/" target="_blank" class="text-purple-400 hover:text-purple-300 underline"><strong>Marc Rafael Lafuente</strong></a></p>
+        <p class="text-xs mb-4">Founder & CEO, <a href="https://modulartaiga.com" target="_blank" class="text-purple-400 hover:text-purple-300 underline">Modular Taiga</a> | CDMP Certified by DAMA-I | Member of <a href="https://www.damaspain.org/profesionales-certificados-cdmp-por-dama-i/" target="_blank" class="text-purple-400 hover:text-purple-300 underline">DAMA Spain</a></p>
+        <div class="flex flex-wrap justify-center gap-4 mb-4 text-xs">
+            <a href="https://github.com/ModularTaiga-marc/kaimak-ontokai-core" target="_blank" class="text-gray-400 hover:text-white transition">
+                GitHub (Open Source)
+            </a>
+            <a href="/" class="text-gray-400 hover:text-white transition">
+                Home
+            </a>
+            <a href="/legal-notice/" class="text-gray-400 hover:text-white transition">
+                Legal Notice
+            </a>
+            <a href="/privacy/" class="text-gray-400 hover:text-white transition">
+                Privacy
+            </a>
+            <a href="/cookies/" class="text-gray-400 hover:text-white transition">
+                Cookies
+            </a>
+        </div>
+        <p class="text-xs">© 2025 Modular Taiga SL. All rights reserved.</p>
+    </footer>
+
+    <script src="../app-semantic-catalyst.js"></script>
+
+    <script>
+    // VERSION B: Watch for results-section to appear, then show interactive graph instead
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔍 Version B: MutationObserver initialized');
+
+        const resultsSection = document.getElementById('results-section');
+
+        if (resultsSection) {
+            // Create observer to watch for when results-section becomes visible
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const target = mutation.target;
+
+                        // Check if results-section just became visible
+                        if (!target.classList.contains('hidden') && target.id === 'results-section') {
+                            console.log('🔍 Version B: results-section became visible, intercepting!');
+
+                            // Access wizardData from global scope (not on window!)
+                            const companyName = (typeof wizardData !== 'undefined' && wizardData.companyName) || 'Your Company';
+                            console.log('🔍 Company name:', companyName);
+
+                            // Store for later use
+                            window.versionBCompanyName = companyName;
+
+                            // Immediately hide results section
+                            target.classList.add('hidden');
+
+                            // Hide all wizard sections
+                            document.getElementById('hero-section')?.classList.add('hidden');
+                            document.getElementById('wizard-section')?.classList.add('hidden');
+                            document.getElementById('loading-section')?.classList.add('hidden');
+
+                            // Show interactive graph section
+                            const kgSection = document.getElementById('interactive-kg-section');
+                            if (kgSection) {
+                                kgSection.classList.remove('hidden');
+
+                                // Set company name in header
+                                const companyHeaderEl = document.getElementById('company-name-header-kg');
+                                if (companyHeaderEl) {
+                                    companyHeaderEl.textContent = companyName;
+                                }
+
+                                // Set company industry (access from global wizardData)
+                                const industryHeaderEl = document.getElementById('company-industry-kg');
+                                if (industryHeaderEl && typeof wizardData !== 'undefined' && wizardData.industry) {
+                                    industryHeaderEl.textContent = wizardData.industry;
+                                }
+
+                                // Load D3.js interactive graph JavaScript
+                                if (!window.interactiveGraphLoaded) {
+                                    console.log('📦 Loading app-interactive-navigation.js...');
+                                    const script = document.createElement('script');
+                                    script.src = '../app-interactive-navigation.js?v=' + Date.now();
+                                    script.onload = function() {
+                                        console.log('✅ app-interactive-navigation.js loaded successfully');
+                                        window.interactiveGraphLoaded = true;
+
+                                        // Initialize graph with wizard data
+                                        console.log('🔍 Checking initialization prerequisites...');
+                                        console.log('🔍 window.initializeInteractiveKG exists?', typeof window.initializeInteractiveKG);
+                                        console.log('🔍 window.wizardData exists?', window.wizardData);
+
+                                        if (typeof window.initializeInteractiveKG === 'function') {
+                                            const companyName = window.versionBCompanyName || 'Your Company';
+                                            console.log('🚀 Initializing interactive graph with company:', companyName);
+                                            window.initializeInteractiveKG(companyName);
+                                        } else {
+                                            console.error('❌ initializeInteractiveKG function not available');
+                                        }
+                                    };
+                                    script.onerror = function() {
+                                        console.error('❌ Failed to load app-interactive-navigation.js');
+                                    };
+                                    document.body.appendChild(script);
+                                }
+
+                                console.log('✅ Version B: Interactive graph displayed successfully');
+                                console.log('✅ Company:', window.wizardData?.company_name);
+                            } else {
+                                console.error('❌ interactive-kg-section element not found!');
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Start observing the results-section for class changes
+            observer.observe(resultsSection, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            console.log('✅ Version B: Watching results-section for visibility changes');
+        } else {
+            console.error('❌ results-section element not found!');
+        }
+    });
+
+    // Global error handler - NEVER show technical errors to users!
+    window.addEventListener('unhandledrejection', (event) => {
+        event.preventDefault(); // Prevent default browser alert
+        console.error('Unhandled promise rejection:', event.reason);
+
+        // Don't show error modals during initialization (fallback handles it)
+        // Only log to console for debugging
+    });
+
+    // URL Parameter Support - Auto-fill wizard from URL
+    // Usage: http://localhost:8002/generate?email=user@company.com&company=Acme&industry=Insurance&size=500&maturity=Intermediate
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.has('email') || params.has('company')) {
+            // Auto-fill wizard data
+            if (params.has('email')) wizardData.email = params.get('email');
+            if (params.has('company')) wizardData.company_name = params.get('company');
+            if (params.has('industry')) wizardData.industry = params.get('industry');
+            if (params.has('size')) wizardData.company_size = params.get('size');
+            if (params.has('maturity')) wizardData.data_maturity = params.get('maturity');
+            if (params.has('location')) wizardData.office_location = params.get('location');
+
+            // Auto-start wizard if all required fields present
+            if (params.has('email') && params.has('company') && params.has('industry')) {
+                setTimeout(() => {
+                    showSection('wizard-section');
+
+                    // Auto-advance to last step if all data provided
+                    if (params.has('size') && params.has('maturity')) {
+                        currentStep = steps.length - 1;
+                    }
+
+                    renderStep();
+
+                    // Auto-submit if parameter present
+                    if (params.has('autostart') && params.get('autostart') === 'true') {
+                        setTimeout(() => {
+                            generateSemanticLayer();
+                        }, 1000);
+                    }
+                }, 500);
+            }
+        }
+    });
+    </script>
+</body>
+</html>

@@ -3,155 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookies Policy - OntoKai</title>
+    <title>OntoKai - Turn Regulations Into Your Business Ontology</title>
+    <meta name="description" content="Generate complete business ontologies from regulations automatically. GDPR, IFRS17, DORA, Solvency II → Knowledge Graph in 2 minutes.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        'catalyst-blue': '#0066cc',
+                        'catalyst-purple': '#6366f1',
                         'catalyst-dark': '#0f172a',
                         'catalyst-gray': '#1e293b',
+                        'kaimak-blue': '#0066cc',
+                        'kaimak-dark': '#1a1a2e',
+                        'kaimak-gray': '#2d2d44',
                     }
                 }
             }
         }
     </script>
+
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+        }
+        .glow-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #6366f1, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fadeInUp 0.6s ease-out; }
+    </style>
 </head>
 <body class="bg-gradient-to-b from-catalyst-dark via-catalyst-gray to-catalyst-dark text-white min-h-screen">
-    <div class="container mx-auto px-4 py-16 max-w-4xl">
-        <a href="/" class="text-purple-400 hover:text-purple-300 mb-8 inline-block">← Back to OntoKai</a>
+    <div class="container mx-auto px-4 py-16 max-w-6xl">
+        <!-- Hero Section -->
+        <div class="text-center mb-16 fade-in-up">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                Turn Regulations Into <br>
+                <span class="gradient-text">Your Business Ontology</span>
+            </h1>
 
-        <h1 class="text-4xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Cookies Policy</h1>
+            <p class="text-2xl text-gray-300 mb-4">
+                From <span class="line-through text-gray-500">18 months manual work</span> to <span class="text-green-400 font-bold">2 minutes automated</span>
+            </p>
 
-        <div class="space-y-8 text-gray-300">
-            <section class="bg-catalyst-gray/50 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-2xl font-bold mb-4 text-white">Introduction</h2>
-                <p class="mb-3">This Cookies Policy explains how OntoKai (operated by Modular Taiga SL) uses cookies and similar technologies when you visit our website.</p>
-                <p>By using OntoKai, you consent to the use of cookies as described in this policy.</p>
-            </section>
+            <p class="text-lg text-gray-400 mb-12">
+                Tell us your company and industry. We analyze your regulations<br>
+                and generate your complete business ontology.
+            </p>
 
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">1. What Are Cookies?</h2>
-                <p class="mb-3">Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit a website. They help websites remember your preferences and improve your browsing experience.</p>
-                <p>Cookies can be:</p>
-                <ul class="list-disc pl-6 space-y-2 mt-3">
-                    <li><strong>Session cookies:</strong> Temporary cookies that expire when you close your browser</li>
-                    <li><strong>Persistent cookies:</strong> Cookies that remain on your device for a set period or until you delete them</li>
-                    <li><strong>First-party cookies:</strong> Set by the website you're visiting</li>
-                    <li><strong>Third-party cookies:</strong> Set by external services</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">2. How We Use Cookies</h2>
-                <p class="mb-4">OntoKai uses cookies for the following purposes:</p>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200 mt-6">2.1 Essential Cookies (Required)</h3>
-                <p class="mb-3">These cookies are necessary for the website to function properly and cannot be disabled:</p>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li><strong>Session Management:</strong> Maintain your session while using the knowledge graph generation wizard</li>
-                    <li><strong>Security:</strong> Prevent fraud and ensure secure connections</li>
-                    <li><strong>Preferences:</strong> Remember your language and display preferences</li>
-                </ul>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200 mt-6">2.2 What We DON'T Use</h3>
-                <p class="mb-3 text-green-400"><strong>OntoKai does NOT use:</strong></p>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Advertising or tracking cookies</li>
-                    <li>Third-party analytics cookies (like Google Analytics)</li>
-                    <li>Social media tracking cookies</li>
-                    <li>Marketing or retargeting cookies</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">3. Cookies We Use</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse border border-gray-700 mt-4">
-                        <thead>
-                            <tr class="bg-catalyst-gray">
-                                <th class="border border-gray-700 px-4 py-2 text-left">Cookie Name</th>
-                                <th class="border border-gray-700 px-4 py-2 text-left">Purpose</th>
-                                <th class="border border-gray-700 px-4 py-2 text-left">Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="border border-gray-700 px-4 py-2"><code class="text-purple-400">session_id</code></td>
-                                <td class="border border-gray-700 px-4 py-2">Maintains your session during wizard use</td>
-                                <td class="border border-gray-700 px-4 py-2">Session (expires when browser closes)</td>
-                            </tr>
-                            <tr class="bg-catalyst-gray/30">
-                                <td class="border border-gray-700 px-4 py-2"><code class="text-purple-400">csrf_token</code></td>
-                                <td class="border border-gray-700 px-4 py-2">Security - prevents cross-site request forgery</td>
-                                <td class="border border-gray-700 px-4 py-2">Session</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-700 px-4 py-2"><code class="text-purple-400">preferences</code></td>
-                                <td class="border border-gray-700 px-4 py-2">Stores language and display preferences</td>
-                                <td class="border border-gray-700 px-4 py-2">30 days</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">4. Managing Cookies</h2>
-                <p class="mb-3">You can control and manage cookies in several ways:</p>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200 mt-6">4.1 Browser Settings</h3>
-                <p class="mb-3">Most browsers allow you to:</p>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>View what cookies are stored and delete them individually</li>
-                    <li>Block third-party cookies</li>
-                    <li>Block cookies from specific websites</li>
-                    <li>Block all cookies</li>
-                    <li>Delete all cookies when you close your browser</li>
-                </ul>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200 mt-6">4.2 Browser-Specific Instructions</h3>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li><strong>Chrome:</strong> Settings → Privacy and security → Cookies and other site data</li>
-                    <li><strong>Firefox:</strong> Settings → Privacy & Security → Cookies and Site Data</li>
-                    <li><strong>Safari:</strong> Preferences → Privacy → Manage Website Data</li>
-                    <li><strong>Edge:</strong> Settings → Cookies and site permissions → Manage and delete cookies</li>
-                </ul>
-
-                <p class="mt-4 text-yellow-400"><strong>Note:</strong> Blocking or deleting essential cookies may affect the functionality of OntoKai.</p>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">5. Updates to This Policy</h2>
-                <p class="mb-3">We may update this Cookies Policy from time to time to reflect changes in our practices or legal requirements.</p>
-                <p>Changes will be posted on this page with an updated "Last Updated" date.</p>
-            </section>
-
-            <section>
-                <h2 class="text-2xl font-bold mb-4 text-white">6. Your Rights (GDPR)</h2>
-                <p class="mb-3">Under GDPR, you have the right to:</p>
-                <ul class="list-disc pl-6 space-y-2">
-                    <li>Know what cookies are being used</li>
-                    <li>Refuse consent for non-essential cookies</li>
-                    <li>Withdraw consent at any time</li>
-                    <li>Access and delete your data</li>
-                </ul>
-            </section>
-
-            <section class="bg-catalyst-gray/50 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-2xl font-bold mb-4 text-white">Contact Us</h2>
-                <p class="mb-4">If you have questions about our use of cookies, please contact us:</p>
-                <p class="mb-2"><strong>Modular Taiga SL</strong></p>
-                <p class="mb-2">Email: <a href="mailto:privacy@modulartaiga.com" class="text-purple-400 hover:text-purple-300">privacy@modulartaiga.com</a></p>
-                <p class="mb-2">Website: <a href="https://modulartaiga.com" target="_blank" class="text-purple-400 hover:text-purple-300">https://modulartaiga.com</a></p>
-            </section>
-
-            <section class="bg-catalyst-gray/50 p-6 rounded-lg border border-gray-700">
-                <p class="text-sm text-gray-400">Last Updated: January 2025</p>
-                <p class="text-sm text-gray-400 mt-2">© 2025 Modular Taiga SL. All rights reserved.</p>
-            </section>
+            <!-- CTA Button -->
+            <div class="mb-8">
+                <a href="/generate?start=true"
+                   class="inline-block bg-gradient-to-r from-purple-600 to-blue-500 text-white px-10 py-5 rounded-lg text-xl font-bold hover:shadow-2xl hover:scale-105 transition-all duration-200 glow-pulse">
+                    Generate My Ontology Now
+                </a>
+                <p class="text-sm text-gray-400 mt-4">Free to try • 2-minute setup • Instant knowledge graph</p>
+            </div>
         </div>
+
+        <!-- Comparison: Old Way vs OntoKai -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            <div class="bg-red-900/20 border-2 border-red-500/50 rounded-xl p-8 backdrop-blur-sm">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">❌</div>
+                    <h3 class="text-2xl font-bold mb-4">The Old Way</h3>
+                    <div class="text-6xl font-bold text-red-400 mb-4">18 months</div>
+                    <ul class="text-left text-gray-300 space-y-2">
+                        <li>• Hire ontology experts</li>
+                        <li>• Interview business + compliance</li>
+                        <li>• Map regulations manually</li>
+                        <li>• Build ontology from scratch</li>
+                        <li>• Spend $500K+</li>
+                    </ul>
+                    <p class="text-red-400 font-bold mt-4">Outdated by the time it's done</p>
+                </div>
+            </div>
+
+            <div class="bg-green-900/20 border-2 border-green-500/50 rounded-xl p-8 backdrop-blur-sm">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="text-2xl font-bold mb-4">With OntoKai</h3>
+                    <div class="text-6xl font-bold text-green-400 mb-4">2 minutes</div>
+                    <ul class="text-left text-gray-300 space-y-2">
+                        <li>• Tell us: company, industry, location</li>
+                        <li>• We analyze regulatory landscape</li>
+                        <li>• Generate complete ontology</li>
+                        <li>• Visualize as knowledge graph</li>
+                        <li>• Export to any platform</li>
+                    </ul>
+                    <p class="text-green-400 font-bold mt-4">Start using immediately</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Value Props -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">📋</div>
+                <div class="font-bold text-xl mb-2">Regulatory Framework</div>
+                <div class="text-sm text-gray-400">All regulations that apply to your company and industry</div>
+            </div>
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">🏢</div>
+                <div class="font-bold text-xl mb-2">Lines of Business</div>
+                <div class="text-sm text-gray-400">Your company's business segments mapped to regulatory requirements</div>
+            </div>
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">⚙️</div>
+                <div class="font-bold text-xl mb-2">Business Processes</div>
+                <div class="text-sm text-gray-400">Key processes derived from regulations, explained in plain language</div>
+            </div>
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">📖</div>
+                <div class="font-bold text-xl mb-2">Business Terms</div>
+                <div class="text-sm text-gray-400">Complete glossary with definitions—the vocabulary of your domain</div>
+            </div>
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">🔗</div>
+                <div class="font-bold text-xl mb-2">Knowledge Graph</div>
+                <div class="text-sm text-gray-400">Interactive ontology visualization—explore relationships, drill down</div>
+            </div>
+            <div class="bg-catalyst-gray/50 rounded-xl p-6 backdrop-blur-sm border border-gray-700">
+                <div class="text-4xl mb-3">📦</div>
+                <div class="font-bold text-xl mb-2">Export Anywhere</div>
+                <div class="text-sm text-gray-400">RDF, OWL, JSON-LD, GraphML—or direct import to Collibra, Alation, Informatica</div>
+            </div>
+        </div>
+
+        <!-- DG Platform Integration -->
+        <div class="mb-16 text-center">
+            <p class="text-sm text-gray-500 mb-4">EXPORT TO YOUR EXISTING DATA GOVERNANCE PLATFORM</p>
+            <div class="flex flex-wrap justify-center gap-6 items-center">
+                <div class="px-6 py-3 bg-gray-800 rounded-lg border border-gray-700 text-gray-300">
+                    <span class="font-semibold">Collibra</span>
+                </div>
+                <div class="px-6 py-3 bg-gray-800 rounded-lg border border-gray-700 text-gray-300">
+                    <span class="font-semibold">Alation</span>
+                </div>
+                <div class="px-6 py-3 bg-gray-800 rounded-lg border border-gray-700 text-gray-300">
+                    <span class="font-semibold">Informatica</span>
+                </div>
+                <div class="px-6 py-3 bg-gray-800 rounded-lg border border-gray-700 text-gray-300">
+                    <span class="font-semibold">Atlan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="text-center bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-2xl p-12 border border-purple-500/30 backdrop-blur-sm">
+            <h2 class="text-4xl font-bold mb-4">Generate Your Ontology in Minutes</h2>
+            <p class="text-xl text-gray-300 mb-8">See how regulations become a complete business ontology—instantly</p>
+            <a href="/generate?start=true"
+               class="inline-block bg-gradient-to-r from-purple-600 to-blue-500 text-white px-10 py-5 rounded-lg text-xl font-bold hover:shadow-2xl hover:scale-105 transition-all duration-200">
+                Start Free
+            </a>
+            <p class="text-sm text-gray-400 mt-4">Takes 2 minutes • No signup required for free tier</p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-gray-700 text-center">
+            <div class="mb-6">
+                <p class="text-lg mb-2"><strong>OntoKai</strong> - Created by <a href="https://www.linkedin.com/in/marcrafaellafuente/" target="_blank" class="text-purple-400 hover:text-purple-300 underline"><strong>Marc Rafael Lafuente</strong></a></p>
+                <p class="text-gray-400">Founder & CEO, <a href="https://modulartaiga.com" target="_blank" class="text-purple-400 hover:text-purple-300 underline">Modular Taiga</a> | CDMP Certified by DAMA-I | Member of <a href="https://www.damaspain.org/profesionales-certificados-cdmp-por-dama-i/" target="_blank" class="text-purple-400 hover:text-purple-300 underline">DAMA Spain</a></p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-6 mb-6">
+                <a href="https://github.com/ModularTaiga-marc/kaimak-ontokai-core" target="_blank" class="text-gray-400 hover:text-white transition">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="https://modulartaiga.com" target="_blank" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-globe"></i> Modular Taiga
+                </a>
+                <a href="https://www.linkedin.com/in/marcrafaellafuente/" target="_blank" class="text-gray-400 hover:text-white transition">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="/legal-notice/" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-file-contract"></i> Legal Notice
+                </a>
+                <a href="/privacy/" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-shield-alt"></i> Privacy
+                </a>
+                <a href="/cookies/" class="text-gray-400 hover:text-white transition">
+                    <i class="fas fa-cookie-bite"></i> Cookies
+                </a>
+            </div>
+
+            <p class="text-gray-500 text-sm">
+                © 2025 Modular Taiga SL
+            </p>
+        </footer>
     </div>
 </body>
 </html>
